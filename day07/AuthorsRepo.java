@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 import dbutil.DbConnectionProvider;
 
@@ -29,8 +28,8 @@ public class AuthorsRepo {
 		}
 	}
 	
-	public Authors authorsList() {
-		Authors[] list = new Authors[25];
+	public List<Authors> authorsList() {
+		List<Authors> list = new ArrayList<>();
 		try (Connection conn = DbConnectionProvider.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement("SELECT name, email FROM authors");) {
 			try (ResultSet rs = pstmt.executeQuery()) {
@@ -38,15 +37,13 @@ public class AuthorsRepo {
 					String name = rs.getString("name");
 					String email = rs.getString("email");	
 					
-					for (int i = 0; i < list.length; i++) {
-						list[i] = new Authors(name, email);
-						return list[i];
-					}
+					Authors authors = new Authors(name, email);
+					list.add(authors);
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
-		return null;
+		return list;
 	}
 }
