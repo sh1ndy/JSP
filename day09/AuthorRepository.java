@@ -48,4 +48,21 @@ public class AuthorRepository {
 		
 		return result;
 	}
+	
+	public int add(Author author) {
+		String sql = "INSERT INTO authors (name, email) VALUES(?, ?)";
+		int result = 0;
+		
+		try (Connection conn = DbConnectionProvider.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);) {
+			pstmt.setString(1, author.getName());
+			pstmt.setString(2, author.getEmail());
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 }

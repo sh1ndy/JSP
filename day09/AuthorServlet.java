@@ -1,5 +1,6 @@
 package author;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import author.util.AuthorUtil;
+
 @WebServlet("/authors")
 public class AuthorServlet extends HttpServlet {
 	private IAuthorService service;
@@ -25,15 +28,19 @@ public class AuthorServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<Author> list = service.getAll();
-		ObjectMapper mapper = new ObjectMapper();
 		
-		String json = mapper.writeValueAsString(list);
+		req.setAttribute("list", list);
+//		ObjectMapper mapper = new ObjectMapper();
+//		
+//		String json = mapper.writeValueAsString(list);
+//		
+//		resp.setCharacterEncoding("utf-8");
+//		resp.setContentType("application/json; charset=utf-8");
+//		PrintWriter out = resp.getWriter();
+//		out.println(json);
+//		out.flush();
 		
-		resp.setCharacterEncoding("utf-8");
-		resp.setContentType("application/json; charset=utf-8");
-		PrintWriter out = resp.getWriter();
-		out.println(json);
-		out.flush();
+		req.getRequestDispatcher("/authorView.jsp").forward(req, resp);
 	}
 
 	@Override
@@ -61,7 +68,17 @@ public class AuthorServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setStatus(501);
+		req.setCharacterEncoding("utf-8");
+		BufferedReader br = req.getReader();
+		
+		try {
+			String body = AuthorUtil.getRequestBodt(br);
+			Author author = AuthorUtil.jsonToAuthor(body);
+			
+			int result = service.add(author);
+		} catch (Exception e) {
+			resp.setStatus(400);
+		}
 	}
 	
 }

@@ -16,7 +16,7 @@ public class AuthorServiceImpl implements IAuthorService {
 
 	@Override
 	public int add(Author author) {
-		throw new UnsupportedOperationException("미구현");
+		return repo.add(author);
 	}
 
 	@Override
